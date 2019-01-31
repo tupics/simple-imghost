@@ -16,11 +16,21 @@ if (!empty($POST['picx']) && !empty($_POST['action']) && !empty($cuser))
         switch ($action)
         {
             case "delete":
+                foreach ($pix as $picid)
+                {
+                    $lookupfilenamesql = 'SELECT LOCATION FROM picture WHERE ID = ?;';
+                    $lookupfilename = $xlink->prepare($lookupfilenamesql);
+                    $lookupfilename->execute(array($picid));
+                    $filename = $lookupfilename->fetchColumn();
+                    unlink('.' . $filename);
+                }
+                //文件级
                 $xlink->beginTransaction();
                 foreach ($picx as $picid)
                 {
                     echo $xlink->exec('DELETE FROM pictures WHERE ID = ' . $picid . ';');
                 }
+                //数据库级
                 $xlink->commit();
                 break;
         }
@@ -44,6 +54,7 @@ if (!empty($POST['picx']) && !empty($_POST['action']) && !empty($cuser))
         }
         actionRun($action);
     }
+    exit;
 }
 ?>
 <html>
