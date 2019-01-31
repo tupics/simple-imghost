@@ -25,8 +25,18 @@ elseif (isset($_POST['user']) && isset($_POST['password']))
     if ($password == $reinsqlpass)
     {
         $recond_cookie = hash("sha256", md5($password . time()+rand() . rand()));
-        $recondtosql = $xlink->prepare("INSERT INTO SYSTEM_LOGREC (ID,RECKE,USER,TIME) VALUES (?,?,?,?);");
-        $recondtosql->execute(array(hash("crc32", $recond_cookie . time() . rand()), $recond_cookie, $user, time()));
+        $searchuser = 'SELECT USER FROM SYSTEM_LOGREC WHERE USER = ?';
+        $sqlrunup = $xlink->query($searchuser);
+        $rowCount = $sqlrunup-rowCount();
+        if ($rowCount)
+        {
+            $recondtosql = $xlink->prepare("INSERT INTO SYSTEM_LOGREC (ID,RECKE,USER,TIME) VALUES (:id,:recke,:user,:time);");
+        }
+        else
+        {
+            $recondtosql = $xlink->prepare("UPDATE SYSTEM_LOGREC set ID = :id, RECKE = :recke, TIME = :time WHERE USER = :user");
+        }
+        $recondtosql->execute(array(':id' => hash("crc32", $recond_cookie . time() . rand()), ':recke' => $recond_cookie, ':user' => $user, ':time' => time()));
         setcookie("login_recond", $recond_cookie, time()+7200, "/", $_SERVER["HTTP_HOST"], true, true);
 
         session_start(array("cookie_lifetime"=>"8400", "cookie_domain"=>$_SERVER["HTTP_HOST"], "cookie_secure"=>true, "cookie_httponly"=>true));
