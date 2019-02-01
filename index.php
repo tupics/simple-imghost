@@ -1,7 +1,8 @@
 <?php
 require "./sqlite_dnb.php";
 require "./verify.php";
-$xlink=null;
+require "./scripts/LookupUserLevel.php";
+$AccessLevel = LookupUserLevel($_SESSION['user']);
 ?>
 <html>
 <head>
@@ -10,6 +11,12 @@ $xlink=null;
 <body>
     <a href="./mgr_pic.php">我的图片[管理员可管理全服图片]</a>
     </br>
+    <?php
+    if ($AccessLevel)
+    {
+        echo "<a href='IvCode.php'>邀请码管理</a>";
+    }
+    ?>
     <form action="upload.php" method="post" enctype="multipart/form-data">
         <input type="file" name="Uploadimg" />
         <input type="submit" value="Upload" />

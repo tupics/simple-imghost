@@ -1,5 +1,6 @@
 <?php
 require "./sqlite_dnb.php";
+require "./scripts/PasswordWays.php";
 if (isset($_COOKIE['login_recond']))
 {
     $lookupsql = 'SELECT ID FROM SYSTEM_LOGREC WHERE RECKE = ?';
@@ -17,14 +18,11 @@ if (isset($_COOKIE['login_recond']))
 elseif (isset($_POST['user']) && isset($_POST['password']))
 {
     $user = $_POST['user'];
-    $password = hash("sha256", md5($_POST['password']));
-    $lookupinfosql = 'SELECT PASSWORD FROM SYSTEM_LOGIF WHERE NAME = ?';
-    $lookupinfo = $xlink->prepare($lookupinfosql);
-    $lookupinfo->execute(array($user));
-    $reinsqlpass = $lookupinfo->fetchColumn();
-    if ($password == $reinsqlpass)
+    $password = $_POST['password'];
+
+    if ($PasswordWaysH->VerifyPassword($password, $user, $xlink))
     {
-        $recond_cookie = hash("sha256", md5($password . time()+rand() . rand()));
+        $recond_cookie = hash("sha256", md5($PasswordWaysH->MakeHash($password) . time()+rand() . bin2hex(openssl_random_pseudo_bytes(20))));
         $searchuser = 'SELECT USER FROM SYSTEM_LOGREC WHERE USER = ?';
         $sqlrunup = $xlink->query($searchuser);
         $rowCount = $sqlrunup-rowCount();

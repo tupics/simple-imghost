@@ -7,16 +7,17 @@ if (file_exists("sqlite_dnb.php"))
 ?>
 <form method="POST">
     <p>Admin Account:</p>
-    <input type="text" name="suser" />
+    <input type="text" name="suser" required/>
     <p>Password:</p>
-    <input type="password" name="spassword" />
+    <input type="password" name="spassword" required/>
     <input type="submit" name="Submit" />
 </form>
 <?php
 if (isset($_POST['suser']) && isset($_POST['spassword']))
 {
     $suser = $_POST['suser'];
-    $spassword = hash("sha256", md5($_POST['spassword']));
+    require "./scripts/PasswordWays.php";
+    $spassword = $PasswordWaysH->MakeHash($_POST['spassword']);
     mkdir("./db", 755);
     $dbname = hash("crc32", md5(rand())) . "db" . rand(0, 9);
     $rlink = new PDO("sqlite:./db/" . $dbname . '.' . 'db');
@@ -38,6 +39,11 @@ if (isset($_POST['suser']) && isset($_POST['spassword']))
                     USER TEXT NOT NULL,
                     TIME INTEGER NOT NULL,
                     IP TEXT NOT NULL);");
+    $rlink->exec("CREATE TABLE SYSTEM_IVCODE(
+                    ID TEXT PRIMARY KEY NOT NULL,
+                    CODE TEXT NOT NULL,
+                    TIME INTEGER NOT NULL,
+                    USER TEXT NOT NULL;");
     $rlink->commit();
     $initsql = "INSERT INTO SYSTEM_LOGIF (NAME,PASSWORD,ADMIN,IP) VALUES (?,?,1,?);";//预准备
     $initdb = $rlink->prepare($initsql);

@@ -1,10 +1,8 @@
 <?php
 require './sqlite_dnb.php';
 require './verify.php';
-$user = $_SESSION['user'];
-$searchuseradmin = $xlink->prepare("SELECT ADMIN FROM SYSTEM_LOGIF WHERE USER = ?;");
-$searchuseradmin->execute(array($user));
-$adminlevel = $searchuseradmin->fetchColumn();
+require './scripts/LookupUserLevel.php';
+$AdminLevel = LookupUserLevel($_SESSION['user']);
 if (!empty($POST['picx']) && !empty($_POST['action']) && !empty($cuser))
 {
     $picx = $_POST['picx'];
@@ -35,7 +33,7 @@ if (!empty($POST['picx']) && !empty($_POST['action']) && !empty($cuser))
                 break;
         }
     }
-    if ($adminlevel)
+    if ($AdminLevel)
     {
         actionRun($action);
     }
@@ -65,7 +63,7 @@ if (!empty($POST['picx']) && !empty($_POST['action']) && !empty($cuser))
         <form action="" method='POST'>
         <h2>PICTURES:</h2>
     <?php
-    if ($adminlevel)
+    if ($AdminLevel)
     {
         $lookuppic = $xlink->prepare("SELECT ID,LOCATION,USER,TIME,IP FROM pictures;");
         $lookuppic->execute();
