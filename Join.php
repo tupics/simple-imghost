@@ -22,7 +22,7 @@ if (!empty($_POST['nuser']) && !empty($_POST['npassword']) && !empty($_POST['IvC
         $RunCheckUserName = $xlink->prepare($CheckUserExistsSql);
         $RunCheckUserName->execute(array($nuser));
         $CheckingUN = $RunCheckUserName->fetchAll(PDO::FETCH_COLUMN, 0);
-        if (empty($CheckingUN))
+        if (!empty($CheckingUN))
         {
             echo "更换用户名后重试";
             echo "<script>location.reload()</script>";

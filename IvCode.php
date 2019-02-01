@@ -14,10 +14,10 @@ if (!empty($_POST['piece']))
     {
         $Codegen = uniqid("",true) . hash("crc32", date("YmdsH"));
         $AddCodeSql = 'INSERT INTO SYSTEM_IVCODE (ID,CODE,TIME,USER) VALUES (:id,:code,:time,:user);';
-        $AddCodeExec = $AddCodeSql->prepare($AddCodeSql);
+        $AddCodeExec = $xlink->prepare($AddCodeSql);
         $AddCodeExec->execute(array(':id' => hash("crc32", $Codegen), ':code' => $Codegen, ':time' => time(), ':user' => $user));
     }
-    echo '<script>location.reload()</script>';
+    echo "<script>location.replace('/IvCode.php')</script>";
     die;
 }
 $LookupCodeSql = "SELECT ID,CODE,TIME,USER FROM SYSTEM_IVCODE;";
@@ -40,7 +40,7 @@ else
 {
     foreach ($Codes as $Code)
     {
-        echo "ID: " . $Code['ID'] . " -- " . "Code: " . $Code['CODE'] . " -- " . "TIME: " . date("Y-m-d H:i:s", $Code['TIME']) . " -- " . "OWNER：" . $Codes['USER'] . "</br>";
+        echo "ID: " . $Code['ID'] . " -- " . "Code: " . $Code['CODE'] . " -- " . "TIME: " . date("Y-m-d H:i:s", $Code['TIME']) . " -- " . "OWNER：" . $Code['USER'] . "</br>";
     }
 }
 ?>

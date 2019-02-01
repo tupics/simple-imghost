@@ -3,7 +3,7 @@ require './sqlite_dnb.php';
 require './verify.php';
 require './scripts/LookupUserLevel.php';
 $AdminLevel = LookupUserLevel($_SESSION['user']);
-if (!empty($POST['picx']) && !empty($_POST['action']) && !empty($cuser))
+if (!empty($_POST['picx']) && !empty($_POST['action']) && !empty($_POST['cuser']))
 {
     $picx = $_POST['picx'];
     $action = $_POST['action'];
@@ -11,12 +11,14 @@ if (!empty($POST['picx']) && !empty($_POST['action']) && !empty($cuser))
     function actionRun($inaction)
     {
         global $xlink;
+        global $picx;
+        global $action;
         switch ($action)
         {
             case "delete":
-                foreach ($pix as $picid)
+                foreach ($picx as $picid)
                 {
-                    $lookupfilenamesql = 'SELECT LOCATION FROM picture WHERE ID = ?;';
+                    $lookupfilenamesql = 'SELECT LOCATION FROM pictures WHERE ID = ?;';
                     $lookupfilename = $xlink->prepare($lookupfilenamesql);
                     $lookupfilename->execute(array($picid));
                     $filename = $lookupfilename->fetchColumn();
@@ -26,7 +28,7 @@ if (!empty($POST['picx']) && !empty($_POST['action']) && !empty($cuser))
                 $xlink->beginTransaction();
                 foreach ($picx as $picid)
                 {
-                    echo $xlink->exec('DELETE FROM pictures WHERE ID = ' . $picid . ';');
+                    $xlink->exec("DELETE FROM pictures WHERE ID = '" . $picid . "';") or die(print_r($xlink->errorInfo(), true));;
                 }
                 //数据库级
                 $xlink->commit();
@@ -52,6 +54,7 @@ if (!empty($POST['picx']) && !empty($_POST['action']) && !empty($cuser))
         }
         actionRun($action);
     }
+    echo "<a href='/mgr_pic.php'>Return</a>";
     exit;
 }
 ?>

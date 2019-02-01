@@ -26,7 +26,7 @@ if (isset($_POST['suser']) && isset($_POST['spassword']))
                     ID INTEGER PRIMARY KEY AUTOINCREMENT,
                     NAME TEXT NOT NULL,
                     PASSWORD TEXT NOT NULL,
-                    ADMIN INTEGER NOT NULL，
+                    ADMIN INTEGER NOT NULL,
                     IP TEXT NOT NULL);");
     $rlink->exec("CREATE TABLE SYSTEM_LOGREC(
                     ID TEXT PRIMARY KEY NOT NULL,
@@ -43,13 +43,13 @@ if (isset($_POST['suser']) && isset($_POST['spassword']))
                     ID TEXT PRIMARY KEY NOT NULL,
                     CODE TEXT NOT NULL,
                     TIME INTEGER NOT NULL,
-                    USER TEXT NOT NULL;");
+                    USER TEXT NOT NULL);");
     $rlink->commit();
     $initsql = "INSERT INTO SYSTEM_LOGIF (NAME,PASSWORD,ADMIN,IP) VALUES (?,?,1,?);";//预准备
     $initdb = $rlink->prepare($initsql);
     require "./scripts/client_ip.php";
     $initdb->execute(array($suser,$spassword,clientIP()));//执行
-    $dbconfig = '<?php if (!isset($xlink)) {$xlink = new PDO("sqlite:./db/' . $dbname . '.' . 'db' . '");}';
+    $dbconfig = '<?php if (!isset($xlink)) {$xlink = new PDO("sqlite:" . $_SERVER["DOCUMENT_ROOT"] . "/db/' . $dbname . '.' . 'db' . '");}';
     if (!file_exists("./sqlite_dnb.php"))
     {
         $dnbconfig = fopen("./sqlite_dnb.php", "w");
