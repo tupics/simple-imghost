@@ -23,9 +23,11 @@ elseif (isset($_POST['user']) && isset($_POST['password']))
     if ($PasswordWaysH->VerifyPassword($password, $user, $xlink))
     {
         $recond_cookie = hash("sha256", md5($PasswordWaysH->MakeHash($password) . time() . bin2hex(openssl_random_pseudo_bytes(20))));
-        $searchuser = 'SELECT count(USER) FROM SYSTEM_LOGREC WHERE USER = ?';
-        $sqlrunup = $xlink->query($searchuser);
-        if ($sqlrunup)
+        $searchuser = 'SELECT count(ID) FROM SYSTEM_LOGREC WHERE USER = ?';
+        $SqlRun = $xlink->prepare($searchuser);
+        $SqlRun->execute(array($user));
+        $SqlData = $SqlRun->fetchColumn();
+        if (!$SqlData)
         {
             $recondtosql = $xlink->prepare("INSERT INTO SYSTEM_LOGREC (ID,RECKE,USER,TIME) VALUES (:id,:recke,:user,:time);");
         }

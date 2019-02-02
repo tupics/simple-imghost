@@ -11,6 +11,8 @@ $AccessLevel = LookupUserLevel($_SESSION['user']);
 <body>
     <a href="./mgr_pic.php">我的图片[管理员可管理全服图片]</a>
     </br>
+    <a href="./logout.php">登出</a>
+    </br>
     <?php
     if ($AccessLevel)
     {

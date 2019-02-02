@@ -42,8 +42,9 @@ elseif ($_FILES['Uploadimg']['error'] == 0)
     if (!file_exists('.' . $lastimgname))
     {
         move_uploaded_file($tempfilename, '.' . $lastimgname);
-        $networkurl = 'https://' . $_SERVER['HTTP_HOST'] . $lastimgname;
-        echo '<a href="' . $networkurl . '">' . $networkurl . '</a>';
+        $networkurl = '.'. $lastimgname;
+        echo '<a href="' . $networkurl . '">' . $networkurl . '</a></br>';
+        echo '<a href="./upload.php">Return</a>';
         $xlink->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         try {
             $startrecond = $xlink->prepare('INSERT INTO pictures (ID,LOCATION,USER,TIME,IP) VALUES (:crc32, :imgname, :user, :time, :clientip);');
@@ -54,6 +55,8 @@ elseif ($_FILES['Uploadimg']['error'] == 0)
     }
     else
     {
-        echo $_SERVER['HTTP_HOST'] . $lastimgname;
+        $networkurl = '.'. $lastimgname;
+        echo '<a href="' . $networkurl . '">' . $networkurl . '</a></br>';
+        echo '<a href="./index.php">Return</a>';
     }
 }

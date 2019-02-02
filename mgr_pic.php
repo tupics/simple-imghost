@@ -3,6 +3,20 @@ require './sqlite_dnb.php';
 require './verify.php';
 require './scripts/LookupUserLevel.php';
 $AdminLevel = LookupUserLevel($_SESSION['user']);
+function GetStart($pcode)
+{
+    return --$pcode * 10;
+}
+if (!empty($_GET['page']))
+{
+    $page = $_GET['page'];
+    $Offset = GetStart($page);
+}
+else
+{
+    $page = 1;
+    $Offset = 0;
+}
 if (!empty($_POST['picx']) && !empty($_POST['action']) && !empty($_POST['cuser']))
 {
     $picx = $_POST['picx'];
@@ -28,7 +42,7 @@ if (!empty($_POST['picx']) && !empty($_POST['action']) && !empty($_POST['cuser']
                 $xlink->beginTransaction();
                 foreach ($picx as $picid)
                 {
-                    $xlink->exec("DELETE FROM pictures WHERE ID = '" . $picid . "';") or die(print_r($xlink->errorInfo(), true));;
+                    echo $xlink->exec("DELETE FROM pictures WHERE ID = '" . $picid . "';") or die(print_r($xlink->errorInfo(), true));;
                 }
                 //数据库级
                 $xlink->commit();
@@ -54,7 +68,7 @@ if (!empty($_POST['picx']) && !empty($_POST['action']) && !empty($_POST['cuser']
         }
         actionRun($action);
     }
-    echo "<a href='/mgr_pic.php'>Return</a>";
+    echo "<a href='./mgr_pic.php'>Return</a>";
     exit;
 }
 ?>
@@ -63,13 +77,13 @@ if (!empty($_POST['picx']) && !empty($_POST['action']) && !empty($_POST['cuser']
     <title>ADMIN --SIHT</title>
     </head>
     <body>
-        <form action="" method='POST'>
+        <form action="" id='pictures' method='POST'>
         <h2>PICTURES:</h2>
     <?php
     if ($AdminLevel)
     {
-        $lookuppic = $xlink->prepare("SELECT ID,LOCATION,USER,TIME,IP FROM pictures;");
-        $lookuppic->execute();
+        $lookuppic = $xlink->prepare("SELECT ID,LOCATION,USER,TIME,IP FROM pictures ORDER BY TIME DESC LIMIT 10 OFFSET :start;");
+        $lookuppic->execute(array(':start' => $Offset));
         $pics = $lookuppic->fetchAll();
         foreach ($pics as $pic)
         {
@@ -79,8 +93,8 @@ if (!empty($_POST['picx']) && !empty($_POST['action']) && !empty($_POST['cuser']
     }
     else
     {
-        $lookuppic = $xlink->prepare("SELECT ID,LOCATION,TIME FROM pictures;");
-        $lookuppic->execute();
+        $lookuppic = $xlink->prepare("SELECT ID,LOCATION,TIME FROM pictures ORDER BY TIME DESC LIMIT 10 OFFSET :start;");
+        $lookuppic->execute(array(':start' => $Offset));
         $pics = $lookuppic->fetchAll();
         foreach ($pics as $pic)
         {
@@ -90,6 +104,36 @@ if (!empty($_POST['picx']) && !empty($_POST['action']) && !empty($_POST['cuser']
     }
     ?>
         </br>
+        <?php
+        if ($page != 1)
+        {
+            echo "<a href='./mgr_pic.php?page=" . --$page . "'><strong><i>上一页</i></strong></a>";
+        }
+        echo "<a href='./mgr_pic.php?page=" . ++$page . "'><strong><i>下一页</i></strong></a></br>";
+        $AvaCount = $xlink->prepare('SELECT count(*) from pictures;');
+        $AvaCount->execute();
+        $Ava = $AvaCount->fetchColumn();
+        function GetMathR($intvalue)
+        {
+            $a = $intvalue / 10;
+            if (is_float($a))
+            {
+                $b = (int)(ceil($a));
+            }
+            elseif (is_int($a))
+            {
+                $b = $a;
+            }
+            else
+            {
+                die;
+            }
+            return $b;
+        }
+        $PageCanBeCreate = GetMathR($Ava);
+        echo "<strong>共" . $PageCanBeCreate . "页</strong></br>";
+        ?>
+        跳转至<input type='text' name='page' form='pcode'/><input type='submit' value="跳转" form='pcode'/></br>
         <h2>Action:</h2>
         <input type='radio' name='action' value='delete' checked>Delete
         </br>
@@ -98,5 +142,6 @@ if (!empty($_POST['picx']) && !empty($_POST['action']) && !empty($_POST['cuser']
         </br>
         <input type='submit' value='Submit'/>
         </form>
+        <form action="" method="GET" id='pcode'></form>
     </body>
 </html>
