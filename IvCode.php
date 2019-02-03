@@ -10,14 +10,14 @@ if (!$Level)
 }
 if (!empty($_POST['piece']))
 {
-    for ($realp = 0;$realp<=$_POST['piece'];$realp++)
+    for ($realp = 0;$realp<$_POST['piece'];$realp++)
     {
         $Codegen = uniqid("",true) . hash("crc32", date("YmdsH"));
         $AddCodeSql = 'INSERT INTO SYSTEM_IVCODE (ID,CODE,TIME,USER) VALUES (:id,:code,:time,:user);';
         $AddCodeExec = $xlink->prepare($AddCodeSql);
         $AddCodeExec->execute(array(':id' => hash("crc32", $Codegen), ':code' => $Codegen, ':time' => time(), ':user' => $user));
     }
-    echo "<script>location.replace('/IvCode.php')</script>";
+    echo "<script>location.replace('./IvCode.php')</script>";
     die;
 }
 $LookupCodeSql = "SELECT ID,CODE,TIME,USER FROM SYSTEM_IVCODE;";
