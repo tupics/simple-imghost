@@ -1,5 +1,5 @@
 <?php
-require "./sqlite_dnb.php";
+require_once "./sqlite_dnb.php";
 require "./verify.php";
 require "./scripts/LookupUserLevel.php";
 $AccessLevel = LookupUserLevel($_SESSION['user']);

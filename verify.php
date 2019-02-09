@@ -1,5 +1,5 @@
 <?php
-require "./sqlite_dnb.php";
+require_once "./sqlite_dnb.php";
 require "./scripts/PasswordWays.php";
 if (isset($_COOKIE['login_recond']))
 {

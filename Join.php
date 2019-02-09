@@ -1,7 +1,7 @@
 <?php
 if (!empty($_POST['nuser']) && !empty($_POST['npassword']) && !empty($_POST['IvCode']))
 {
-    require "./sqlite_dnb.php";
+    require_once "./sqlite_dnb.php";
     require "./scripts/client_ip.php";
     require "./scripts/PasswordWays.php";
     $nuser = $_POST['nuser'];

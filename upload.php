@@ -1,5 +1,5 @@
 <?php
-require "./sqlite_dnb.php";
+require_once "./sqlite_dnb.php";
 require "./verify.php";
 require "./scripts/client_ip.php";
 if (empty($_FILES))

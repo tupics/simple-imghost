@@ -49,7 +49,7 @@ if (isset($_POST['suser']) && isset($_POST['spassword']))
     $initdb = $rlink->prepare($initsql);
     require "./scripts/client_ip.php";
     $initdb->execute(array($suser,$spassword,clientIP()));//执行
-    $dbconfig = '<?php if (!isset($xlink)) {$xlink = new PDO("sqlite:./db/' . $dbname . '.' . 'db' . '");}';
+    $dbconfig = '<?php $xlink = new PDO("sqlite:./db/' . $dbname . '.' . 'db' . '");';
     if (!file_exists("./sqlite_dnb.php"))
     {
         $dnbconfig = fopen("./sqlite_dnb.php", "w");
