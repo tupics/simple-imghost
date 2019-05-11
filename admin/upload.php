@@ -1,7 +1,7 @@
 <?php
-require_once "./sqlite_dnb.php";
+require_once "../status/DatabaseCon.php";
 require "./verify.php";
-require "./scripts/client_ip.php";
+require "../scripts/client_ip.php";
 if (empty($_FILES))
 {
     header("Status: 403");
@@ -37,7 +37,7 @@ elseif ($_FILES['Uploadimg']['error'] == 0)
     $tempfile = fopen($tempfilename, "r");
     $tempdata = fread($tempfile,filesize($tempfilename));
     fclose($tempfile);
-    $imgcrc32 = hash("crc32", $tempdata);
+    $imgchecksum = hash("crc32", $tempdata) . hash("md5", $tempdata);
     $lastimgname = "/uploads/" . $imgcrc32 . '.' . $imgext;
     if (!file_exists('.' . $lastimgname))
     {

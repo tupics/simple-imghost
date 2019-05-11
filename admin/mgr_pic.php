@@ -1,7 +1,7 @@
 <?php
-require './sqlite_dnb.php';
+require '../status/DatabaseCon.php';
 require './verify.php';
-require './scripts/LookupUserLevel.php';
+require '../scripts/LookupUserLevel.php';
 $AdminLevel = LookupUserLevel($_SESSION['user']);
 function GetStart($pcode)
 {
