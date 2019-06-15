@@ -1,7 +1,8 @@
 <?php
 require_once "../status/DatabaseCon.php";
 require "./verify.php";
-require "../scripts/client_ip.php";
+require_once "../scripts/client_ip.php";
+require "../scripts/UploadProgress.php";
 if (empty($_FILES))
 {
     header("Status: 403");
@@ -9,54 +10,15 @@ if (empty($_FILES))
 elseif ($_FILES['Uploadimg']['error'] !== 0)
 {
     var_dump($_FILES['Uploadimg']);
-    echo "Upload error. I want <a href='" . $_SERVER["HTTP_HOST"] . "/index.php'>try again</a>.";
+    echo "Upload error. I want <a href='./index.php'>try again</a>.";
 }
 elseif ($_FILES['Uploadimg']['error'] == 0)
 {
-    $tempfilename = $_FILES['Uploadimg']['tmp_name'];
-    $imgrealtype = mime_content_type($tempfilename);
-    switch ($imgrealtype)
-    {
-        case "image/jpeg":
-            echo "<p>" . $imgrealtype . "</p>";
-            $imgext = "jpeg";
-            break;
-        case "image/png":
-            echo "<p>" . $imgrealtype . "</p>";
-            $imgext = "png";
-            break;
-        case "image/webp":
-            echo "<p>" . $imgrealtype . "</p>";
-            $imgext = "webp";
-            break;
-        default:
-            header("Status: 403");
-            die;
-            break;
-    }
-    $tempfile = fopen($tempfilename, "r");
-    $tempdata = fread($tempfile,filesize($tempfilename));
-    fclose($tempfile);
-    $imgchecksum = hash("crc32", $tempdata) . hash("md5", $tempdata);
-    $lastimgname = "/uploads/" . $imgcrc32 . '.' . $imgext;
-    if (!file_exists('.' . $lastimgname))
-    {
-        move_uploaded_file($tempfilename, '.' . $lastimgname);
-        $networkurl = '.'. $lastimgname;
-        echo '<a href="' . $networkurl . '">' . $networkurl . '</a></br>';
-        echo '<a href="./index.php">Return</a>';
-        $xlink->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        try {
-            $startrecond = $xlink->prepare('INSERT INTO pictures (ID,LOCATION,USER,TIME,IP) VALUES (:crc32, :imgname, :user, :time, :clientip);');
-            $startrecond->execute(array(':crc32' => $imgcrc32, ':imgname' => $lastimgname, ':user' => $_SESSION['user'], ':time' => time(), ':clientip' => clientIP()));
-        } catch (PDOException $e) {
-            echo $e->getMessage();
-        }
-    }
-    else
-    {
-        $networkurl = '.'. $lastimgname;
-        echo '<a href="' . $networkurl . '">' . $networkurl . '</a></br>';
-        echo '<a href="./index.php">Return</a>';
-    }
+    $DirPrefix = "..";
+    $UploadF = new UploadFile;
+    $UploadF->Upload($_FILES['Uploadimg'], $xlink, $DirPrefix, clientIP());
+    $OutputF = "%s</br><a href='..%2\$s'>%2\$s</a></br>";
+    printf($OutputF, $UploadF->FileType['MIME'], $UploadF->Locations['Fake']);
 }
+?>
+<a href="./index.php">Return</a>

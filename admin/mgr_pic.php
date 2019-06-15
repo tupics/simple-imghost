@@ -1,8 +1,7 @@
 <?php
-require '../status/DatabaseCon.php';
+require_once '../status/DatabaseCon.php';
 require './verify.php';
-require '../scripts/LookupUserLevel.php';
-$AdminLevel = LookupUserLevel($_SESSION['user']);
+$AdminLevel = $_SESSION['Level'];
 function GetStart($pcode)
 {
     return --$pcode * 10;
@@ -22,21 +21,20 @@ if (!empty($_POST['picx']) && !empty($_POST['action']) && !empty($_POST['cuser']
     $picx = $_POST['picx'];
     $action = $_POST['action'];
     $cuser = $_POST['cuser'];
-    function actionRun($inaction)
+    function actionRun($action)
     {
         global $xlink;
         global $picx;
-        global $action;
         switch ($action)
         {
             case "delete":
                 foreach ($picx as $picid)
                 {
-                    $lookupfilenamesql = 'SELECT LOCATION FROM pictures WHERE ID = ?;';
+                    $lookupfilenamesql = 'SELECT `LOCATION` FROM `pictures` WHERE `ID` = ?;';
                     $lookupfilename = $xlink->prepare($lookupfilenamesql);
                     $lookupfilename->execute(array($picid));
                     $filename = $lookupfilename->fetchColumn();
-                    unlink('.' . $filename);
+                    unlink('..' . $filename);
                 }
                 //文件级
                 $xlink->beginTransaction();
@@ -82,24 +80,32 @@ if (!empty($_POST['picx']) && !empty($_POST['action']) && !empty($_POST['cuser']
     <?php
     if ($AdminLevel)
     {
-        $lookuppic = $xlink->prepare("SELECT ID,LOCATION,USER,TIME,IP FROM pictures ORDER BY TIME DESC LIMIT 10 OFFSET :start;");
-        $lookuppic->execute(array(':start' => $Offset));
+        $lookuppic = $xlink->prepare('SELECT `ID`,`LOCATION`,`USER`,`TIME`,`IP` FROM `pictures` ORDER BY `TIME` DESC LIMIT 10 OFFSET ?;');
+        $lookuppic->bindParam(1, $Offset, PDO::PARAM_INT);
+        $lookuppic->execute();
         $pics = $lookuppic->fetchAll();
+        $lookuppic->closeCursor();
         foreach ($pics as $pic)
         {
-            echo "<input name='picx[]'" . " type='checkbox' value='" . $pic['ID'] . "'/>";
-            echo "<p>" . $pic['ID'] . " -- " . $pic['LOCATION'] . " -- " . $pic['USER'] . " -- " . date("Y-m-d H:i:s", $pic['TIME']) . " -- " . $pic['IP'] . "</p>";
+            $PicCheckbox = "<input name='picx[]' type='checkbox' value='%s' />";
+            printf($PicCheckbox, $pic['ID']);
+            $PicInfo = "<p>%s -- %s -- %s -- %s -- %s</p>";
+            printf($PicInfo, $pic['ID'], $pic['LOCATION'], $pic['USER'], $pic['TIME'], $pic['IP']);
         }
     }
     else
     {
-        $lookuppic = $xlink->prepare("SELECT ID,LOCATION,TIME FROM pictures ORDER BY TIME DESC LIMIT 10 OFFSET :start;");
-        $lookuppic->execute(array(':start' => $Offset));
+        $lookuppic = $xlink->prepare("SELECT `ID`,`LOCATION`,`TIME` FROM `pictures` ORDER BY `TIME` DESC LIMIT 10 OFFSET ?;");
+        $lookuppic->bindParam(1, $Offset, PDO::PARAM_INT);
+        $lookuppic->execute();
         $pics = $lookuppic->fetchAll();
+        $lookuppic->closeCursor();
         foreach ($pics as $pic)
         {
-            echo "<input name='picx[]'" . " type='checkbox' value='" . $pic['ID'] . "'/>";
-            echo "<p>" . $pic['ID'] . " -- " . $pic['LOCATION'] . " -- " . date("Y-m-d H:i:s", $pic['TIME']) . "</p>";
+            $PicCheckbox = "<input name='picx[]' type='checkbox' value='%s' />";
+            printf($PicCheckbox, $pic['ID']);
+            $PicInfo = "<p>%s -- %s -- %s</p>";
+            printf($PicInfo, $pic['ID'], $pic['LOCATION'], $pic['TIME']);
         }
     }
     ?>
@@ -113,6 +119,7 @@ if (!empty($_POST['picx']) && !empty($_POST['action']) && !empty($_POST['cuser']
         $AvaCount = $xlink->prepare('SELECT count(*) from pictures;');
         $AvaCount->execute();
         $Ava = $AvaCount->fetchColumn();
+        $AvaCount->closeCursor();
         function GetMathR($intvalue)
         {
             $a = $intvalue / 10;

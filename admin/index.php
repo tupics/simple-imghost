@@ -1,8 +1,7 @@
 <?php
-require_once "../status/DatabasrCon.php";
+require_once "../status/DatabaseCon.php";
 require "./verify.php";
-require "../scripts/LookupUserLevel.php";
-$AccessLevel = LookupUserLevel($_SESSION['user']);
+$AccessLevel = $_SESSION['Level'];
 ?>
 <html>
 <head>

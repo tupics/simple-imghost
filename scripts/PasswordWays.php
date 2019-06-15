@@ -5,14 +5,14 @@ class PasswordWaysH
     {
         return password_hash($Password, PASSWORD_DEFAULT);
     }
-    public function VerifyPassword($Password, $UserName, $dblink)
+    public static function VerifyPassword($Password, $UserName, $dblink)
     {
-        $LookupHashSql = 'SELECT PASSWORD FROM SYSTEM_LOGIF WHERE NAME = ?';
+        $LookupHashSql = 'SELECT `PASSWORD` FROM `SYSTEM_LOGIF` WHERE `NAME` = ?';
         $RunLookupHash = $dblink->prepare($LookupHashSql);
         $RunLookupHash->execute(array($UserName));
         $InBaseHash = $RunLookupHash->fetchColumn();
+        $RunLookupHash->closeCursor();
         $TrueAndFalse = password_verify($Password, $InBaseHash);
         return $TrueAndFalse;
     }
 }
-$PasswordWaysH = new PasswordWaysH();

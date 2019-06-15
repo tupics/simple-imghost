@@ -1,9 +1,8 @@
 <?php
-require_once "../DatabaseCon.php";
+require_once "../status/DatabaseCon.php";
 require "./verify.php";
-require "../scripts/LookupUserLevel.php";
 $user = $_SESSION['user'];
-$Level = LookupUserLevel($user);
+$Level = $_SESSION['Level'];
 if (!$Level)
 {
     die;
@@ -13,17 +12,19 @@ if (!empty($_POST['piece']))
     for ($realp = 0;$realp<$_POST['piece'];$realp++)
     {
         $Codegen = uniqid("",true) . hash("crc32", date("YmdsH"));
-        $AddCodeSql = 'INSERT INTO SYSTEM_IVCODE (ID,CODE,TIME,USER) VALUES (:id,:code,:time,:user);';
+        $AddCodeSql = 'INSERT INTO `SYSTEM_IVCODE` (`ID`,`CODE`,`TIME`,`USER`) VALUES (:id,:code,:time,:user);';
         $AddCodeExec = $xlink->prepare($AddCodeSql);
         $AddCodeExec->execute(array(':id' => hash("crc32", $Codegen), ':code' => $Codegen, ':time' => time(), ':user' => $user));
+        $AddCodeExec->closeCursor();
     }
     echo "<script>location.replace('./IvCode.php')</script>";
     die;
 }
-$LookupCodeSql = "SELECT ID,CODE,TIME,USER FROM SYSTEM_IVCODE;";
+$LookupCodeSql = "SELECT `ID`,`CODE`,`TIME`,`USER` FROM `SYSTEM_IVCODE`;";
 $LookupCodePrepare = $xlink->prepare($LookupCodeSql);
 $LookupCodePrepare->execute();
 $Codes = $LookupCodePrepare->fetchAll();
+$LookupCodePrepare->closeCursor();
 ?>
 <html>
     <head>

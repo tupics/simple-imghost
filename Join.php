@@ -4,6 +4,7 @@ if (!empty($_POST['nuser']) && !empty($_POST['npassword']) && !empty($_POST['IvC
     require_once "./status/DatabaseCon.php";
     require "./scripts/client_ip.php";
     require "./scripts/PasswordWays.php";
+    $PasswordWaysH = new PasswordWaysH;
     $nuser = $_POST['nuser'];
     $npassword = $PasswordWaysH->MakeHash($_POST['npassword']);
     $IvCode = $_POST['IvCode'];
