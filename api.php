@@ -30,7 +30,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
             $Result = array("location" => $Rec->Locations['Fake'], "width" => $Imgsize[0], "height" => $Imgsize['1']);
             echo json_encode($Result);
             //生成一张75%的图片
-            $CFileName = substr_replace($Rec->Locations['Real'], "upload_resize", 2, 6);
+            $CFileName = substr_replace($Rec->Locations['Real'], "uploads_resize", 2, 7);
             PhotoMod::CheckAndCompress($CFileName, $Rec->Locations['Real'], $Rec->Locations['Fake'], 75, $xlink);
         }
         else{
@@ -53,7 +53,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
             //$CutName = explode("/", $FileName);
             //$NewFileNameF = "%s/upload_resize/%s/%s-%d";
             //$NewFileName = sprintf($NewFileNameF, $DirPrefix, $CutName[-2], $CutName[-1], $Qua);
-            $NewFileName = substr_replace($FFileName, "upload_resize", 2, 6) . $Qua;
+            $NewFileName = substr_replace($FFileName, "uploads_resize", 2, 7) . $Qua;
             //$OriFileNameF = "%s/upload/%s/%s";
             //$OriFileName = sprintf($OriFileNameF, $DirPrefix, $CutName[-2], $CutName[-1]);
             if (file_exists($NewFileName))
