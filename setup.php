@@ -30,7 +30,8 @@ if (isset($_POST['info']) && isset($_POST['mysql']))
     $info = $_POST['info'];
     $mysql = $_POST['mysql'];
     require "./scripts/PasswordWays.php";
-    $spassword = $PasswordWaysH->MakeHash($info['password']);
+    $PWH = new PasswordWaysH;
+    $spassword = $PWH->MakeHash($info['password']);
     $MysqlDSNFormat = "mysql:host=%s;port=%s;dbname=%s";
     $MysqlDSN = sprintf($MysqlDSNFormat, $mysql['address'], $mysql['port'], $mysql['database']);
     $rlink = new PDO($MysqlDSN, $mysql['user'], $mysql['password']);
