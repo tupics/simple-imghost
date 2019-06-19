@@ -45,7 +45,7 @@ abstract class ProgressFile
         fclose($Filestream);
         $FileChecksum = hash("crc32", $FileData) . hash("md5", $FileData);
         $Locations = array();
-        $Locations['Fake'] = "/uploads/" . time() . $FileChecksum . '.' . $ImgExt;
+        $Locations['Fake'] = "/uploads/" . date("Y-m-d") . '/' . $FileChecksum . '.' . $ImgExt;
         $Locations['Real'] = $PathPrefix . $Locations['Fake'];
         if (file_exists($Locations['Real']))
         {

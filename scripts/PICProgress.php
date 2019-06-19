@@ -7,10 +7,10 @@ class PhotoMod
         header("Content-type: " . $FileMIME);
         echo readfile($FileName);
     }
-    public static function CheckAndCompress($FileName, $OriFileName, $Qua, $SQLink)
+    public static function CheckAndCompress($FileName, $OriFileName, $FakeFileName, $Qua, $SQLink)
     {
         $CheckSQL = $SQLink->prepare("SELECT count(`ID`) FROM `pictures` WHERE LOCATION = ?");
-        $CheckSQL->execute(array($FileName));
+        $CheckSQL->execute(array($FakeFileName));
         $CheckResult = $CheckSQL->fetchColumn();
         if ($CheckResult == 1)
         {
