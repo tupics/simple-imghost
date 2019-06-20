@@ -14,7 +14,7 @@ class PhotoMod
         $CheckResult = $CheckSQL->fetchColumn();
         if ($CheckResult == 1)
         {
-            $FileMIME = mime_content_type($FileName);
+            $FileMIME = mime_content_type($OriFileName);
             switch ($FileMIME) {
                 case 'image/webp':
                     $cmd = "cwebp -q %d %s -o %s";

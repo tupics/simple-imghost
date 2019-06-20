@@ -69,8 +69,8 @@ if (isset($_POST['info']) && isset($_POST['mysql']))
         $dnbconfig = fopen("./status/DatabaseCon.php", "w");
         fwrite($dnbconfig, $dbconfig);
         fclose($dnbconfig);
-        is_dir("./uploads") or mkdir("./upload", 0755);
-        is_dir("./uploads_resize") or mkdir("./upload_resize", 0755);
+        is_dir("./uploads") or mkdir("./uploads", 0755);
+        is_dir("./uploads_resize") or mkdir("./uploads_resize", 0755);
     }
     else
     {
