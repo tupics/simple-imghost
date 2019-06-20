@@ -33,7 +33,7 @@ function APIGEN()
         {
             $fetchKeys = $xlink->prepare("SELECT count(`KEY`) FROM `SYSTEM_APIKEY` WHERE `USER` = ?;");
             $fetchKeys->execute(array($_SESSION['user']));
-            $NumOfUserKey = $fetchKeys->fetchColumn();
+            $NumOfUserKey = (int)$fetchKeys->fetchColumn();
             echo "<h2>API Key:</h2>";
             if ($NumOfUserKey > 0)
             {
@@ -42,7 +42,7 @@ function APIGEN()
             elseif ($NumOfUserKey === 0)
             {
                 $genkey = APIGEN();
-                echo "你的KEY为:" . $genkey;
+                echo "你的KEY为: '" . $genkey . "'";
                 $Insertsql = $xlink->prepare("INSERT INTO `SYSTEM_APIKEY` (`USER`,`KEY`) VALUES (?,?);");
                 $Insertsql->execute(array($_SESSION['user'], $genkey));
                 $Insertsql->closeCursor();

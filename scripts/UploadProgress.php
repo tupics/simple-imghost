@@ -38,14 +38,17 @@ abstract class ProgressFile
             die;
         }
     }
-    protected static function SaveFileAndInfo($File, $Sql, $ImgExt, $PathPrefix, $CAddress)
+    protected static function SaveFileAndInfo($File, $Sql, $ImgExt, $PathPrefix, $CAddress, $User)
     {
         $Filestream = fopen($File, "r");
         $FileData = fread($Filestream,filesize($File));
         fclose($Filestream);
         $FileChecksum = hash("crc32", $FileData) . hash("md5", $FileData);
         $Locations = array();
-        $Locations['Fake'] = "/uploads/" . date("Y-m-d") . '/' . $FileChecksum . '.' . $ImgExt;
+        $DateR = date("Y-m-d");
+        $DirName = "/uploads/" . $DateR . '/';
+        is_dir($PathPrefix . $DirName) or mkdir($PathPrefix . $DirName);
+        $Locations['Fake'] = $DirName . $FileChecksum . '.' . $ImgExt;
         $Locations['Real'] = $PathPrefix . $Locations['Fake'];
         if (file_exists($Locations['Real']))
         {
@@ -56,7 +59,7 @@ abstract class ProgressFile
             $Sql->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             try {
                 $startrecond = $Sql->prepare('INSERT INTO `pictures` (`ID`,`LOCATION`,`USER`,`IP`) VALUES (UUID(), :imgname, :user, :clientip);');
-                $startrecond->execute(array(':imgname' => $Locations['Fake'], ':user' => $_SESSION['user'], ':clientip' => $CAddress));
+                $startrecond->execute(array(':imgname' => $Locations['Fake'], ':user' => $User, ':clientip' => $CAddress));
                 $startrecond->closeCursor();
             } catch (PDOException $e) {
                 echo $e->getMessage();
@@ -69,9 +72,9 @@ class UploadFile extends ProgressFile
 {
     public $FileType;
     public $Locations;
-    public function Upload($FILEX, $Sql, $Prefix, $ClientIP)
+    public function Upload($FILEX, $Sql, $Prefix, $ClientIP, $User)
     {
         $this->FileType = $this::CheckFileType($FILEX['tmp_name']);
-        $this->Locations = $this::SaveFileAndInfo($FILEX['tmp_name'], $Sql, $this->FileType['EXT'], $Prefix, $ClientIP);
+        $this->Locations = $this::SaveFileAndInfo($FILEX['tmp_name'], $Sql, $this->FileType['EXT'], $Prefix, $ClientIP, $User);
     }
 }

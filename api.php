@@ -10,25 +10,25 @@ switch ($_SERVER['REQUEST_METHOD']) {
         $User = $_POST['user'];
         $Sin = $_POST['sin'];
         $timestamp = $_POST['timestamp'];
-        $FetchNumOfUsersKey = $xlink->prepare("SELECT count(`KEY`) FROM `SYSTEM_APIKEY` WHERE USER = ?;");
-        $FetchNumOfUsersKeyE = $FetchNumOfUsersKey->execute(array($User));
-        $NumOfUsersKey = $FetchNumOfUsersKeyE->fetchComlumn();
+        $FetchNumOfUsersKey = $xlink->prepare("SELECT count(`KEY`) FROM `SYSTEM_APIKEY` WHERE `USER` = ?;");
+        $FetchNumOfUsersKey->execute(array($User));
+        $NumOfUsersKey = $FetchNumOfUsersKey->fetchColumn();
         if ($NumOfUsersKey == 1) {
-            $FetchUsersKey = $xlink->prepare("SELECT `KEY` FROM SYSTEM_APIKEY WHERE USER = ?;");
-            $FetchUsersKeyE = $FetchUsersKey->execute(array($User));
-            $UserKey = $FetchUsersKeyE->fetchComlumn();
+            $FetchUsersKey = $xlink->prepare("SELECT `KEY` FROM `SYSTEM_APIKEY` WHERE `USER` = ?;");
+            $FetchUsersKey->execute(array($User));
+            $UserKey = $FetchUsersKey->fetchColumn();
         } else {
             die;
         }
-        is_uploaded_file($_FILES['pictures']['tmp_name']) or die;
-        $SinString = hash("sha512", md5($UserKey . $timestamp . base64_encode(file_get_contents($_FILES['pictures']['tmp_name']))));
+        is_uploaded_file($_FILES['picture']['tmp_name']) or die;
+        $SinString = hash("sha512", md5($UserKey . $timestamp . file_get_contents($_FILES['picture']['tmp_name'])));
         if (hash_equals($SinString, $Sin))
         {
             $Rec = new UploadFile;
-            $Rec->Upload($_FILE['picture'], $xlink, $DirPrefix, clientIP());
+            $Rec->Upload($_FILES['picture'], $xlink, $DirPrefix, clientIP(), $User);
             $Imgsize = getimagesize($Rec->Locations['Real']);
             $Result = array("location" => $Rec->Locations['Fake'], "width" => $Imgsize[0], "height" => $Imgsize['1']);
-            echo json_encode($Result);
+            echo json_encode($Result, JSON_UNESCAPED_SLASHES);
             //生成一张75%的图片
             $CFileName = substr_replace($Rec->Locations['Real'], "uploads_resize", 2, 7);
             PhotoMod::CheckAndCompress($CFileName, $Rec->Locations['Real'], $Rec->Locations['Fake'], 75, $xlink);

@@ -16,7 +16,7 @@ elseif ($_FILES['Uploadimg']['error'] == 0)
 {
     $DirPrefix = "..";
     $UploadF = new UploadFile;
-    $UploadF->Upload($_FILES['Uploadimg'], $xlink, $DirPrefix, clientIP());
+    $UploadF->Upload($_FILES['Uploadimg'], $xlink, $DirPrefix, clientIP(), $_SESSION['user']);
     $OutputF = "%s</br><a href='..%2\$s'>%2\$s</a></br>";
     printf($OutputF, $UploadF->FileType['MIME'], $UploadF->Locations['Fake']);
 }
