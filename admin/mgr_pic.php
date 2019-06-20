@@ -34,7 +34,9 @@ if (!empty($_POST['picx']) && !empty($_POST['action']) && !empty($_POST['cuser']
                     $lookupfilename = $xlink->prepare($lookupfilenamesql);
                     $lookupfilename->execute(array($picid));
                     $filename = $lookupfilename->fetchColumn();
+                    $cfilenamep = substr_replace($filename, "uploads_resize", 2, 7);
                     unlink('..' . $filename);
+                    array_map('unlink', glob('..' . $cfilenamep . '*'));
                 }
                 //文件级
                 $xlink->beginTransaction();
