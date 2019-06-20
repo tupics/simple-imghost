@@ -64,6 +64,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
             }
             else
             {
+                is_dir(dirname($NewFileName)) or mkdir(dirname($NewFileName));
                 PhotoMod::CheckAndCompress($NewFileName, $FFileName, $FileName, $Qua, $xlink);
                 PhotoMod::Display($NewFileName);
             }
