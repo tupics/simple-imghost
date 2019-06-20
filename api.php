@@ -40,8 +40,6 @@ switch ($_SERVER['REQUEST_METHOD']) {
         break;
     
     case 'GET':
-        if (isset($_GET['q']))
-        {
             $FileName = $_SERVER['PATH_INFO'];
             $FFileName = $DirPrefix . $_SERVER['PATH_INFO'];
             if (!file_exists($FFileName))
@@ -69,7 +67,6 @@ switch ($_SERVER['REQUEST_METHOD']) {
                 PhotoMod::CheckAndCompress($NewFileName, $FFileName, $FileName, $Qua, $xlink);
                 PhotoMod::Display($NewFileName);
             }
-        }
         break;
     
     default:
