@@ -47,7 +47,17 @@ switch ($_SERVER['REQUEST_METHOD']) {
                 header("Status: 404");
                 exit;
             }
-            $Qua = isset($_GET['q']) ? (int) $_GET['q'] : null or $Qua = 75;
+            if (isset($_GET['q']))
+            {
+                $Qua = (int)$_GET['q'];
+                if ($Qua == 0)
+                {
+                    $Qua = 100;
+                }
+            }
+            else {
+                $Qua = 75;
+            }
             //$CutName = explode("/", $FileName);
             //$NewFileNameF = "%s/upload_resize/%s/%s-%d";
             //$NewFileName = sprintf($NewFileNameF, $DirPrefix, $CutName[-2], $CutName[-1], $Qua);
